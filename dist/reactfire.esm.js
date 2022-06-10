@@ -1348,11 +1348,12 @@ var SuspenseSubject = /*#__PURE__*/function (_Subject) {
 
   // @ts-expect-error: TODO: double check to see if this is an RXJS thing or if we should listen to TS
   // @ts-expect-error: TODO: double check to see if this is an RXJS thing or if we should listen to TS
-  function SuspenseSubject(innerObservable, _timeoutWindow) {
+  function SuspenseSubject(innerObservable, _timeoutWindow, _suspenseEnabled) {
     var _this;
 
     _this = _Subject.call(this) || this;
     _this._timeoutWindow = void 0;
+    _this._suspenseEnabled = void 0;
     _this._value = void 0;
     _this._hasValue = false;
     _this._timeoutHandler = void 0;
@@ -1360,10 +1361,10 @@ var SuspenseSubject = /*#__PURE__*/function (_Subject) {
     _this._error = undefined;
     _this._innerObservable = void 0;
     _this._warmupSubscription = void 0;
-    _this._isSuspenseEnabled = useIsSuspenseEnabled();
     _this._innerSubscriber = void 0;
     _this._resolveFirstEmission = void 0;
     _this._timeoutWindow = _timeoutWindow;
+    _this._suspenseEnabled = _suspenseEnabled;
     _this._firstEmission = new Promise(function (resolve) {
       return _this._resolveFirstEmission = resolve;
     });
@@ -1385,8 +1386,9 @@ var SuspenseSubject = /*#__PURE__*/function (_Subject) {
     _this._warmupSubscription = _this._innerObservable.subscribe(); // set a timeout for resetting the cache, subscriptions will cancel the timeout
     // and reschedule again on unsubscribe
 
-    if (_this._isSuspenseEnabled) {
+    if (_this._suspenseEnabled) {
       // Noop if suspense is enabled
+      console.log('SuspenseSubject: Suspense is enabled');
       _this._timeoutHandler = setTimeout(function () {}, _this._timeoutWindow);
     } else {
       _this._timeoutHandler = setTimeout(_this._reset.bind(_assertThisInitialized(_this)), _this._timeoutWindow);

@@ -1,6 +1,7 @@
 import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
 export declare class SuspenseSubject<T> extends Subject<T> {
     private _timeoutWindow;
+    private _suspenseEnabled;
     private _value;
     private _hasValue;
     private _timeoutHandler;
@@ -8,10 +9,9 @@ export declare class SuspenseSubject<T> extends Subject<T> {
     private _error;
     private _innerObservable;
     private _warmupSubscription;
-    private _isSuspenseEnabled;
     private _innerSubscriber;
     private _resolveFirstEmission;
-    constructor(innerObservable: Observable<T>, _timeoutWindow: number);
+    constructor(innerObservable: Observable<T>, _timeoutWindow: number, _suspenseEnabled: boolean);
     get hasValue(): boolean;
     get value(): T;
     get firstEmission(): Promise<void>;
