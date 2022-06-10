@@ -1479,11 +1479,11 @@ if (!globalThis._reactFirePreloadedObservables) {
 // child that will consume the observable
 
 
-function preloadObservable(source, id) {
+function preloadObservable(source, id, suspenseEnabled) {
   if (preloadedObservables.has(id)) {
     return preloadedObservables.get(id);
   } else {
-    var observable = new SuspenseSubject(source, DEFAULT_TIMEOUT);
+    var observable = new SuspenseSubject(source, DEFAULT_TIMEOUT, suspenseEnabled);
     preloadedObservables.set(id, observable);
     return observable;
   }
@@ -1533,11 +1533,11 @@ function useObservable(observableId, source, config) {
     throw new Error('cannot call useObservable without an observableId');
   }
 
-  var observable = preloadObservable(source, observableId); // Suspend if suspense is enabled and no initial data exists
+  var suspenseEnabled = useSuspenseEnabledFromConfigAndContext(config.suspense);
+  var observable = preloadObservable(source, observableId, suspenseEnabled); // Suspend if suspense is enabled and no initial data exists
 
   var hasInitialData = config.hasOwnProperty('initialData') || config.hasOwnProperty('startWithValue');
   var hasData = observable.hasValue || hasInitialData;
-  var suspenseEnabled = useSuspenseEnabledFromConfigAndContext(config.suspense);
 
   if (suspenseEnabled === true && !hasData) {
     throw observable.firstEmission;

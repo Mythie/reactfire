@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { SuspenseSubject } from './SuspenseSubject';
 import { ReactFireOptions } from './';
-export declare function preloadObservable<T>(source: Observable<T>, id: string): SuspenseSubject<T>;
+export declare function preloadObservable<T>(source: Observable<T>, id: string, suspenseEnabled: boolean): SuspenseSubject<T>;
 export interface ObservableStatus<T> {
     /**
      * The loading status.
