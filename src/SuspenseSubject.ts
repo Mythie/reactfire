@@ -1,5 +1,6 @@
 import { empty, Observable, Subject, Subscriber, Subscription } from 'rxjs';
 import { catchError, shareReplay, tap } from 'rxjs/operators';
+import { useIsSuspenseEnabled } from './firebaseApp';
 
 export class SuspenseSubject<T> extends Subject<T> {
   private _value: T | undefined;
@@ -9,6 +10,7 @@ export class SuspenseSubject<T> extends Subject<T> {
   private _error: any = undefined;
   private _innerObservable: Observable<T>;
   private _warmupSubscription: Subscription;
+  private _isSuspenseEnabled = useIsSuspenseEnabled();
 
   // @ts-expect-error: TODO: double check to see if this is an RXJS thing or if we should listen to TS
   private _innerSubscriber: Subscription;
@@ -38,7 +40,12 @@ export class SuspenseSubject<T> extends Subject<T> {
 
     // set a timeout for resetting the cache, subscriptions will cancel the timeout
     // and reschedule again on unsubscribe
-    this._timeoutHandler = setTimeout(this._reset.bind(this), this._timeoutWindow);
+    if (this._isSuspenseEnabled) {
+      // Noop if suspense is enabled
+      this._timeoutHandler = setTimeout(() => {}, this._timeoutWindow);
+    }
+      else { this._timeoutHandler = setTimeout(this._reset.bind(this), this._timeoutWindow);
+    }
   }
 
   get hasValue(): boolean {
